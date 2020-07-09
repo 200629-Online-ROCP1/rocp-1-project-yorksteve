@@ -4,7 +4,11 @@ public class Account
 {
 	private int accountId;
 	private double balance;
-	private AccountStatus statue;
+	private AccountStatus status;
 	private AccountType type;
 
+	private void AccessAccount()
+	{
+		
+	}
 }
