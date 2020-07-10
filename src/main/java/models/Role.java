@@ -4,27 +4,22 @@ public class Role
 {
 	private int roleId;
 	private String role;
-
-	private void StandardRole()
+	
+	public Role() 
 	{
-		role = "Standard";
-		//Access Users
-		//Access Account
-		//Access AccountType
+		super();
 	}
 	
-	private void EmployeeRole()
+	public Role(String role) 
 	{
-		StandardRole();
-		role = "Employee";
-		//View Users for all
+		super();
+		this.role = role;
 	}
 	
-	private void AdminRole()
+	public Role(int roleId, String role) 
 	{
-		StandardRole();
-		role = "Admin";
-		//Access Users for all
+		super();
+		this.roleId = roleId;
+		this.role = role;
 	}
-	
 }
