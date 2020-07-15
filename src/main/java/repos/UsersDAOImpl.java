@@ -2,15 +2,18 @@ package repos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Set;
 
-import controllers.ConnectionUtil;
 import models.Users;
+import models.Role;
+import util.ConnectionUtil;
 
 public class UsersDAOImpl implements UsersDAO 
 {
-	
+	//Singleton
 	private static UsersDAOImpl repo = new UsersDAOImpl();
 	
 	private UsersDAOImpl() {}
@@ -20,20 +23,26 @@ public class UsersDAOImpl implements UsersDAO
 		return repo;
 	}
 
+	
 	@Override
-	public boolean Insert(Users user) 
+	public boolean Insert(Users user) //This is registering a User
 	{
 		System.out.println("In Users users");
 		
-		try (Connection conn = ConnectionUtil.GetConnection())
+		try (Connection uconn = ConnectionUtil.GetConnection())
 		{
 			int index = 0;
 			String sql = "INSERT INTO users(user_name, pass_word, first_name, last_name, email, role_fk"
-						+ "VALUES(?,?,?,?,?,?)";
+						+ "VALUES(?,?,?,?,?,?);";
 			
-			PreparedStatement statement = conn.prepareStatement(sql);
+			PreparedStatement statement = uconn.prepareStatement(sql);
 			
-			statement.setString(++index, users.getFirstName());
+			statement.setString(++index, user.getFirstName());
+			statement.setString(++index, user.getLastName());
+			statement.setString(++index, user.getUsername());
+			statement.setString(++index, user.getPassword());
+			statement.setObject(++index, user.getRole());
+			statement.setString(++index, user.getEmail());
 			
 		}
 		
@@ -44,26 +53,106 @@ public class UsersDAOImpl implements UsersDAO
 		
 		return false;
 	}
-
+	
+	
+	
 	@Override
-	public boolean InsertStatement(Users user) 
+	public Users FindByUserId(int userId) 
 	{
-		// TODO Auto-generated method stub
+		try (Connection uconn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM users WHERE user_id = ?;";
+			
+			PreparedStatement statement = uconn.prepareStatement(sql);
+			statement.setInt(1, userId);
+			
+			ResultSet result = statement.executeQuery();
+			
+			if (result.next())
+			{
+				return new Users(result.getInt("user_id"),
+								 result.getString("user_name"), 
+								 result.getString("pass_word"),
+								 result.getString("first_name"), 
+								 result.getString("last_name"),
+								 result.getString("email"),
+								 result.getRole("role_fk"));
+			}
+			
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
+		return null;
+	}
+
+	
+	
+	@Override
+	public boolean UpdateUser(Users user) 
+	{
+		try (Connection uconn = ConnectionUtil.GetConnection())
+		{
+			int index = 0;
+			String sql = "UPDATE * FROM users WHERE user_id = ?;";
+			PreparedStatement statement = uconn.prepareStatement(sql);
+			
+			statement.setString(++index, user.getUsername());
+			statement.setString(++index, user.getPassword());
+			statement.setString(++index, user.getFirstName());
+			statement.setString(++index, user.getLastName());
+			statement.setString(++index, user.getEmail());
+			
+			if (statement.execute())
+			{
+				return true;
+			}
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
 		return false;
 	}
 
-	@Override
-	public Users FindByFirstName(String firstName) 
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
+	
 	@Override
 	public Set<Users> SelectAll() 
 	{
-		// TODO Auto-generated method stub
+		try (Connection uconn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM users;";
+			PreparedStatement statement = uconn.prepareStatement(sql);
+			Set<Users> set = new HashSet<>();
+			ResultSet result = statement.executeQuery(sql);
+			
+			while (result.next()) 
+			{
+				set.add(new Users(result.getInt("user_id"),
+								  result.getString("user_name"), 
+								  result.getString("pass_word"),
+								  result.getString("first_name"), 
+								  result.getString("last_name"),
+								  result.getString("email"),
+								  result.getRole("role_fk")));				
+			}
+			
+			return set;
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
 		return null;
 	}
+
+
 
 }

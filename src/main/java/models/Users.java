@@ -39,6 +39,18 @@ public class Users
 		this.role = role;
 	}
 	
+	
+	
+
+	public int getUserID() 
+	{
+		return userID;
+	}
+
+	public void setUserID(int userID) 
+	{
+		this.userID = userID;
+	}
 
 	public String getUsername() 
 	{
@@ -127,6 +139,7 @@ public class Users
 	}
 	
 
+	
 	@Override
 	public boolean equals(Object obj) 
 	{
