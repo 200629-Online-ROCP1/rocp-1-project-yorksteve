@@ -4,6 +4,6 @@ import models.Role;
 
 public interface RoleDAO 
 {
-	public Role GetRole(int roleId);
+	public Role getRoleById(int roleId);
 
 }

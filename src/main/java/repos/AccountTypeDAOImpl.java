@@ -2,9 +2,12 @@ package repos;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Set;
 
+import models.AccountStatus;
 import models.AccountType;
 import util.ConnectionUtil;
 
@@ -20,12 +23,12 @@ public class AccountTypeDAOImpl implements AccountTypeDAO
 	
 
 	@Override
-	public boolean Insert(AccountType accountType) 
+	public boolean insert(AccountType accountType) 
 	{
-		try (Connection atconn = ConnectionUtil.GetConnection())
+		try (Connection conn = ConnectionUtil.GetConnection())
 		{
 			String sql = "INSERT INTO accouttype(account_type) VALUES(?);";
-			PreparedStatement statement = atconn.prepareStatement(sql);
+			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setString(1, accountType.getType());
 			
 			if (statement.execute()) 
@@ -44,33 +47,86 @@ public class AccountTypeDAOImpl implements AccountTypeDAO
 	}
 
 	@Override
-	public boolean InsertStatement(AccountType accountType) 
+	public boolean insertStatement(AccountType accountType) 
 	{
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public AccountType FindByFirstName(String firstName) 
+	public AccountType findById(int id) 
 	{
-		// TODO Auto-generated method stub
+		try (Connection conn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM accountstatus WHERE status_id = ?";
+			
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, id);
+			
+			ResultSet result = statement.executeQuery();
+			
+			if (result.next()) 
+			{
+				return new AccountType(result.getInt("type_id"), result.getString("account_type"));
+			}
+			
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
 		return null;
 	}
 
 	@Override
-	public Set<AccountType> SelectAll() 
+	public Set<AccountType> selectAll() 
 	{
-		// TODO Auto-generated method stub
+		try (Connection conn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM accounttype;";
+			
+			PreparedStatement statement = conn.prepareStatement(sql);
+			
+			Set<AccountType> set = new HashSet<>();
+			
+			ResultSet result = statement.executeQuery(sql);
+			
+			while (result.next())
+			{
+				set.add(new AccountType(result.getInt("type_id"), result.getString("account_type")));
+			}
+			
+			return set;
+			
+			
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
 		return null;
 	}
+	
 	@Override
-	public boolean UpdateType(AccountType accountType) 
+	public boolean updateType(AccountType accountType) 
 	{
-		try (Connection atconn = ConnectionUtil.GetConnection())
+		try (Connection conn = ConnectionUtil.GetConnection())
 		{
 			String sql = "UPDATE accounttype(account_type) WHERE type_id = ?;";
-			PreparedStatement statement = atconn.prepareStatement(sql);
 			
+			PreparedStatement statement = conn.prepareStatement(sql);
+			
+			statement.setInt(1, accountType.getTypeId());
+			statement.setString(2, accountType.getType());
+			
+			if (statement.execute())
+			{
+				return true;
+			}
 		}
 		
 		catch (SQLException e)

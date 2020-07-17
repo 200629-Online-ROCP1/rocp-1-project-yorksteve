@@ -6,9 +6,9 @@ import models.AccountStatus;
 
 public interface AccountStatusDAO 
 {
-	public boolean Insert(AccountStatus accountStatus);
-	public boolean UpdateStatus(AccountStatus accountStatus);
-	public AccountStatus FindByFirstName(String firstName);
-	public Set<AccountStatus> SelectAll();
+	public boolean insert(AccountStatus accountStatus);
+	public boolean updateStatus(AccountStatus accountStatus);
+	public AccountStatus findById(int id);
+	public Set<AccountStatus> selectAll();
 
 }

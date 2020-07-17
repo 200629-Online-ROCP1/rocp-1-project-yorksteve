@@ -25,17 +25,17 @@ public class UsersDAOImpl implements UsersDAO
 
 	
 	@Override
-	public boolean Insert(Users user) //This is registering a User
+	public boolean insert(Users user) //This is registering a User
 	{
 		System.out.println("In Users users");
 		
-		try (Connection uconn = ConnectionUtil.GetConnection())
+		try (Connection conn = ConnectionUtil.GetConnection())
 		{
 			int index = 0;
 			String sql = "INSERT INTO users(user_name, pass_word, first_name, last_name, email, role_fk"
 						+ "VALUES(?,?,?,?,?,?);";
 			
-			PreparedStatement statement = uconn.prepareStatement(sql);
+			PreparedStatement statement = conn.prepareStatement(sql);
 			
 			statement.setString(++index, user.getFirstName());
 			statement.setString(++index, user.getLastName());
@@ -57,13 +57,13 @@ public class UsersDAOImpl implements UsersDAO
 	
 	
 	@Override
-	public Users FindByUserId(int userId) 
+	public Users findByUserId(int userId) 
 	{
-		try (Connection uconn = ConnectionUtil.GetConnection())
+		try (Connection conn = ConnectionUtil.GetConnection())
 		{
 			String sql = "SELECT * FROM users WHERE user_id = ?;";
 			
-			PreparedStatement statement = uconn.prepareStatement(sql);
+			PreparedStatement statement = conn.prepareStatement(sql);
 			statement.setInt(1, userId);
 			
 			ResultSet result = statement.executeQuery();
@@ -92,13 +92,13 @@ public class UsersDAOImpl implements UsersDAO
 	
 	
 	@Override
-	public boolean UpdateUser(Users user) 
+	public boolean updateUser(Users user) 
 	{
-		try (Connection uconn = ConnectionUtil.GetConnection())
+		try (Connection conn = ConnectionUtil.GetConnection())
 		{
 			int index = 0;
 			String sql = "UPDATE * FROM users WHERE user_id = ?;";
-			PreparedStatement statement = uconn.prepareStatement(sql);
+			PreparedStatement statement = conn.prepareStatement(sql);
 			
 			statement.setString(++index, user.getUsername());
 			statement.setString(++index, user.getPassword());
@@ -123,12 +123,12 @@ public class UsersDAOImpl implements UsersDAO
 	
 	
 	@Override
-	public Set<Users> SelectAll() 
+	public Set<Users> selectAll() 
 	{
-		try (Connection uconn = ConnectionUtil.GetConnection())
+		try (Connection conn = ConnectionUtil.GetConnection())
 		{
 			String sql = "SELECT * FROM users;";
-			PreparedStatement statement = uconn.prepareStatement(sql);
+			PreparedStatement statement = conn.prepareStatement(sql);
 			Set<Users> set = new HashSet<>();
 			ResultSet result = statement.executeQuery(sql);
 			
@@ -150,6 +150,7 @@ public class UsersDAOImpl implements UsersDAO
 		{
 			System.out.println(e);
 		}
+		
 		return null;
 	}
 

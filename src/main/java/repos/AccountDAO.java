@@ -4,9 +4,9 @@ import models.Account;
 
 public interface AccountDAO 
 {
-	public boolean CreateAccount(Account account);
-	public boolean UpdateAccount(Account account);
-	public Account GetAccountByID(int accountId);
-	public void DeleteAccount(int accountId);
+	public boolean createAccount(Account account);
+	public boolean updateAccountById(Account account);
+	public Account getAccountByID(int accountId);
+	public void deleteAccount(int accountId);
 
 }

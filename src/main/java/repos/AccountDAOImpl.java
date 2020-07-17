@@ -22,17 +22,18 @@ public class AccountDAOImpl implements AccountDAO
 	
 	
 	@Override
-	public boolean CreateAccount(Account account) 
+	public boolean createAccount(Account account) 
 	{
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
 			String sql = "INSERT INTO accounts(account_id, account_balance, "
 					+ "account_status_fk, account_type_fk) VALUES(?,?,?,?);";
+			
 			PreparedStatement statement = aconn.prepareStatement(sql);
 			statement.setInt(1, account.getAccountId());
 			statement.setFloat(2, account.getBalance());
-			statement.setString(3, account.getStatus());
-			statement.setString(4, account.getType());
+			statement.setInt(3, account.getStatus().getStatusId());
+			statement.setInt(4, account.getType().getTypeId());
 			
 			if (statement.execute()) 
 			{
@@ -51,11 +52,23 @@ public class AccountDAOImpl implements AccountDAO
 	
 	
 	@Override
-	public boolean UpdateAccount(Account account) 
+	public boolean updateAccountById(Account account) 
 	{
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
+			int index = 0;
 			
+			String sql = "UPDATE accounts WHERE account_id = ?;";
+			
+			PreparedStatement statement = aconn.prepareStatement(sql);
+			statement.setFloat(++index, account.getBalance());
+			statement.setInt(++index, account.getStatus().getStatusId());
+			statement.setInt(++index, account.getType().getTypeId());
+			
+			if (statement.execute())
+			{
+				return true;
+			}
 		}
 		
 		catch (SQLException e)
@@ -70,11 +83,12 @@ public class AccountDAOImpl implements AccountDAO
 	
 	
 	@Override
-	public Account GetAccountByID(int accountId) 
+	public Account getAccountByID(int accountId) 
 	{
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
-			String sql = "SELECT * FROM account WHERE account_id = ?;";
+			String sql = "SELECT * FROM accounts WHERE account_id = ?;";
+			
 			PreparedStatement statement = aconn.prepareStatement(sql);
 			statement.setInt(1, accountId);
 			
@@ -84,8 +98,8 @@ public class AccountDAOImpl implements AccountDAO
 			{
 				return new Account(result.getInt("account_id"),
 								   result.getFloat("account_balance"), 
-								   result.getAccountStatus("account_status"),
-								   result.getInt("account_type"));
+								   result.getAccountStatus("account_status_fk"),
+								   result.getInt("account_type_fk"));
 			}
 		}
 		
@@ -101,11 +115,12 @@ public class AccountDAOImpl implements AccountDAO
 	
 	
 	@Override
-	public void DeleteAccount(int accountId) 
+	public void deleteAccount(int accountId) 
 	{
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
-			String sql = "DELETE account WHERE account_id = ?;";
+			String sql = "DELETE accounts WHERE account_id = ?;";
+			
 			PreparedStatement statement = aconn.prepareStatement(sql);
 			statement.setInt(1, accountId);
 		}

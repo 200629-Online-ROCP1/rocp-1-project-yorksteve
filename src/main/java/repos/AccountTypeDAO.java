@@ -6,10 +6,10 @@ import models.AccountType;
 
 public interface AccountTypeDAO 
 {
-	public boolean Insert(AccountType accountType);
-	public boolean InsertStatement(AccountType accountType);
-	public AccountType FindByFirstName(String firstName);
-	public Set<AccountType> SelectAll();
-	public boolean UpdateType(AccountType accountType);
+	public boolean insert(AccountType accountType);
+	public boolean insertStatement(AccountType accountType);
+	public AccountType findById(int id);
+	public Set<AccountType> selectAll();
+	public boolean updateType(AccountType accountType);
 
 }

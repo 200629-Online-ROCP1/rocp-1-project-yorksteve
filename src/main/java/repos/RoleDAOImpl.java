@@ -23,13 +23,13 @@ public class RoleDAOImpl implements RoleDAO
 
 	
 	@Override
-	public Role GetRole(int roleId) 
+	public Role getRoleById(int roleId) 
 	{
 		try (Connection rconn = ConnectionUtil.GetConnection())
 		{
 			String sql = "INSERT INTO roles(role_id, role_)" + "VALUES(?,?);";
 			PreparedStatement statement = rconn.prepareStatement(sql);
-			statement.setString(1, roleId.getRoleId());
+			statement.setInt(1, roleId.getRoleId());
 		}
 		
 		catch (SQLException e)
