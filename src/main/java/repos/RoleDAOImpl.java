@@ -27,9 +27,9 @@ public class RoleDAOImpl implements RoleDAO
 	{
 		try (Connection rconn = ConnectionUtil.GetConnection())
 		{
-			String sql = "INSERT INTO roles(role_id, role_)" + "VALUES(?,?);";
+			String sql = "SELECT * FROM roles WHERE role_id = ?;";
 			PreparedStatement statement = rconn.prepareStatement(sql);
-			statement.setInt(1, roleId.getRoleId());
+			statement.setInt(1, roleId);
 		}
 		
 		catch (SQLException e)

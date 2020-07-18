@@ -17,7 +17,7 @@ public class AccountStatusDAOImpl implements AccountStatusDAO
 	
 	private AccountStatusDAOImpl() {}
 	
-	public static AccountStatusDAOImpl GetInstance()
+	public static AccountStatusDAOImpl getInstance()
 	{
 		return repo;
 	}

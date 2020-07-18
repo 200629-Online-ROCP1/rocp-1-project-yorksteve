@@ -3,7 +3,7 @@ package models;
 public class Account 
 {
 	private int accountId;
-	private float balance;
+	public float balance;
 	private AccountStatus status;
 	private AccountType type;
 	

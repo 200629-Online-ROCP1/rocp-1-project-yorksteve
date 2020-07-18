@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import models.Account;
+import models.AccountStatus;
+import models.AccountType;
 import util.ConnectionUtil;
 
 public class AccountDAOImpl implements AccountDAO 
@@ -13,12 +15,16 @@ public class AccountDAOImpl implements AccountDAO
 	
 	// Singleton Form
 	private static AccountDAOImpl repo = new AccountDAOImpl();
-	private AccountDAOImpl() {}
+	public AccountDAOImpl() {}
 	public static AccountDAOImpl GetInstance()
 	{
 		return repo;
 	}
 
+	
+	AccountTypeDAOImpl typeDAO = AccountTypeDAOImpl.getInstance();
+	AccountStatusDAOImpl statusDAO = AccountStatusDAOImpl.getInstance();
+	Account account = new Account();
 	
 	
 	@Override
@@ -96,10 +102,11 @@ public class AccountDAOImpl implements AccountDAO
 			
 			if (result.next())
 			{
-				return new Account(result.getInt("account_id"),
-								   result.getFloat("account_balance"), 
-								   result.getAccountStatus("account_status_fk"),
-								   result.getInt("account_type_fk"));
+				Account a = new Account();
+				a.setAccountId(result.getInt("account_id"));
+				a.setBalance(result.getFloat("account_balance")); 
+				a.setStatus(result.getAccountStatus("account_status_fk"));
+				a.setType(result.getInt("account_type_fk"));
 			}
 		}
 		
@@ -129,6 +136,42 @@ public class AccountDAOImpl implements AccountDAO
 		{
 			System.out.println(e);
 		}
+	}
+	
+	@Override
+	public float withdraw(float amount) 
+	{
+		account.balance -= amount;
+		return account.balance;
+	}
+
+	@Override
+	public float deposit(float amount) 
+	{
+		account.balance += amount;
+		return account.balance;
+	}
+	
+	@Override
+	public float transfer(float amount) 
+	{
+		return account.balance;
+	}
+	
+	@Override
+	public AccountStatus getAccountStatusById(int id) 
+	{
+		AccountStatus accountStatus = statusDAO.findById(id);
+		
+		return accountStatus;
+	}
+	
+	@Override
+	public AccountType getAccountTypeById(int id) 
+	{
+		AccountType accountType = typeDAO.findById(id);
+		
+		return accountType;
 	}
 
 }

@@ -16,7 +16,7 @@ public class UsersDAOImpl implements UsersDAO
 	//Singleton
 	private static UsersDAOImpl repo = new UsersDAOImpl();
 	
-	private UsersDAOImpl() {}
+	public UsersDAOImpl() {}
 	
 	public static UsersDAOImpl GetInstance()
 	{
@@ -70,13 +70,12 @@ public class UsersDAOImpl implements UsersDAO
 			
 			if (result.next())
 			{
-				return new Users(result.getInt("user_id"),
-								 result.getString("user_name"), 
-								 result.getString("pass_word"),
-								 result.getString("first_name"), 
-								 result.getString("last_name"),
-								 result.getString("email"),
+				return new Users(result.getInt("user_id"), result.getString("user_name"), 
+								 result.getString("pass_word"), result.getString("first_name"),
+								 result.getString("last_name"), result.getString("email"),
 								 result.getRole("role_fk"));
+				
+				
 			}
 			
 		}
