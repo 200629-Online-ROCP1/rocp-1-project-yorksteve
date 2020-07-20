@@ -22,6 +22,8 @@ public class UsersDAOImpl implements UsersDAO
 	{
 		return repo;
 	}
+	
+	private static final RoleDAO rdao = new RoleDAOImpl();
 
 	
 	@Override
@@ -70,10 +72,19 @@ public class UsersDAOImpl implements UsersDAO
 			
 			if (result.next())
 			{
-				return new Users(result.getInt("user_id"), result.getString("user_name"), 
-								 result.getString("pass_word"), result.getString("first_name"),
-								 result.getString("last_name"), result.getString("email"),
-								 result.getRole("role_fk"));
+				Users u = new Users();				
+				u.setUserID(result.getInt("user_id")); 
+				u.setUsername(result.getString("user_name")); 
+				u.setPassword(result.getString("pass_word")); 
+				u.setFirstName(result.getString("first_name"));
+				u.setLastName(result.getString("last_name"));
+				u.setEmail(result.getString("email"));
+				
+				if (result.getInt("role_fk") != 0)
+				{
+					Role r = rdao.getRoleById(result.getInt("role_fk"));
+					u.setRole(r);
+				}
 				
 				
 			}
@@ -133,16 +144,96 @@ public class UsersDAOImpl implements UsersDAO
 			
 			while (result.next()) 
 			{
-				set.add(new Users(result.getInt("user_id"),
-								  result.getString("user_name"), 
-								  result.getString("pass_word"),
-								  result.getString("first_name"), 
-								  result.getString("last_name"),
-								  result.getString("email"),
-								  result.getRole("role_fk")));				
+				Users u = new Users();				
+				u.setUserID(result.getInt("user_id")); 
+				u.setUsername(result.getString("user_name")); 
+				u.setPassword(result.getString("pass_word")); 
+				u.setFirstName(result.getString("first_name"));
+				u.setLastName(result.getString("last_name"));
+				u.setEmail(result.getString("email"));
+				
+				if (result.getInt("role_fk") != 0)
+				{
+					Role r = rdao.getRoleById(result.getInt("role_fk"));
+					u.setRole(r);
+				}			
 			}
 			
 			return set;
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Users findByUserName(String username) 
+	{
+		try (Connection conn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM users WHERE user_name = ?;";
+			
+			PreparedStatement statement = conn.prepareStatement(sql);
+			
+			ResultSet result = statement.executeQuery(sql);
+			
+			if (result.next())
+			{
+				Users u = new Users();
+				u.setUserID(result.getInt("user_id"));
+				u.setUsername(result.getString("user_name")); 
+				u.setPassword(result.getString("pass_word")); 
+				u.setFirstName(result.getString("first_name"));
+				u.setLastName(result.getString("last_name"));
+				u.setEmail(result.getString("email"));
+				
+				if (result.getInt("role_fk") != 0)
+				{
+					Role r = rdao.getRoleById(result.getInt("role_fk"));
+					u.setRole(r);
+				}	
+			}
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Users findByPassword(String password) 
+	{
+		try (Connection conn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM users WHERE pass_word = ?;";
+			
+			PreparedStatement statement = conn.prepareStatement(sql);
+			
+			ResultSet result = statement.executeQuery(sql);
+			
+			if (result.next())
+			{
+				Users u = new Users();
+				u.setUserID(result.getInt("user_id"));
+				u.setUsername(result.getString("user_name")); 
+				u.setPassword(result.getString("pass_word")); 
+				u.setFirstName(result.getString("first_name"));
+				u.setLastName(result.getString("last_name"));
+				u.setEmail(result.getString("email"));
+				
+				if (result.getInt("role_fk") != 0)
+				{
+					Role r = rdao.getRoleById(result.getInt("role_fk"));
+					u.setRole(r);
+				}	
+			}
 		}
 		
 		catch (SQLException e)

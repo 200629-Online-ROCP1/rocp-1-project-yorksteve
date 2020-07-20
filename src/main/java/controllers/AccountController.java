@@ -44,4 +44,9 @@ public class AccountController
 		return as.updateAccountById(account);
 	}
 
+	public Account getAccountById(int id) 
+	{
+		return as.getAccountById(id);
+	}
+
 }

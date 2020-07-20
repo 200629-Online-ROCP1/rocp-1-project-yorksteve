@@ -15,7 +15,7 @@ public class AccountTypeDAOImpl implements AccountTypeDAO
 {
 	//Singleton Form
 	private static AccountTypeDAOImpl self = new AccountTypeDAOImpl();
-	private AccountTypeDAOImpl() {}
+	public AccountTypeDAOImpl() {}
 	public static AccountTypeDAOImpl getInstance()
 	{
 		return self;

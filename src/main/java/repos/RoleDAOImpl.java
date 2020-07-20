@@ -13,7 +13,7 @@ public class RoleDAOImpl implements RoleDAO
 	//Singleton
 	private static RoleDAOImpl self = new RoleDAOImpl();
 	
-	private RoleDAOImpl() {}
+	public RoleDAOImpl() {}
 	
 	public static RoleDAOImpl getInstance()
 	{

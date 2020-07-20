@@ -10,12 +10,17 @@ import javax.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import models.LoginDTO;
+import models.Role;
+import repos.RoleDAO;
+import repos.RoleDAOImpl;
 import services.LoginService;
+import services.RoleService;
 
 public class LoginController 
 {
 	private static final LoginService ls = new LoginService();
 	private static final ObjectMapper om = new ObjectMapper();
+	private static final RoleService rs = new RoleService();
 	
 	public void login(HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
@@ -71,9 +76,6 @@ public class LoginController
 			
 			if (ls.login(l))
 			{
-				HttpSession ses = req.getSession();
-				ses.setAttribute("user", l);
-				ses.setAttribute("loggedin", true);
 				res.setStatus(200);
 				res.getWriter().println("Login Successful!");
 			}

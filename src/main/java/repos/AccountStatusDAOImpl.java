@@ -15,7 +15,7 @@ public class AccountStatusDAOImpl implements AccountStatusDAO
 	// Singleton Form
 	private static AccountStatusDAOImpl repo = new AccountStatusDAOImpl();
 	
-	private AccountStatusDAOImpl() {}
+	public AccountStatusDAOImpl() {}
 	
 	public static AccountStatusDAOImpl getInstance()
 	{

@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import models.Account;
 import models.AccountStatus;
 import models.AccountType;
+import models.Role;
 import util.ConnectionUtil;
 
 public class AccountDAOImpl implements AccountDAO 
@@ -20,11 +21,12 @@ public class AccountDAOImpl implements AccountDAO
 	{
 		return repo;
 	}
-
 	
-	AccountTypeDAOImpl typeDAO = AccountTypeDAOImpl.getInstance();
-	AccountStatusDAOImpl statusDAO = AccountStatusDAOImpl.getInstance();
+	
 	Account account = new Account();
+	
+	private static final AccountStatusDAO asdao = new AccountStatusDAOImpl();
+	private static final AccountTypeDAO atdao = new AccountTypeDAOImpl();
 	
 	
 	@Override
@@ -91,6 +93,8 @@ public class AccountDAOImpl implements AccountDAO
 	@Override
 	public Account getAccountByID(int accountId) 
 	{
+		
+		
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
 			String sql = "SELECT * FROM accounts WHERE account_id = ?;";
@@ -100,13 +104,24 @@ public class AccountDAOImpl implements AccountDAO
 			
 			ResultSet result = statement.executeQuery();
 			
-			if (result.next())
+			while (result.next())
 			{
 				Account a = new Account();
 				a.setAccountId(result.getInt("account_id"));
-				a.setBalance(result.getFloat("account_balance")); 
-				a.setStatus(result.getAccountStatus("account_status_fk"));
-				a.setType(result.getInt("account_type_fk"));
+				a.setBalance(result.getFloat("account_balance"));
+				
+				if (result.getInt("account_status_fk") != 0)
+				{
+					AccountStatus as = asdao.findById(result.getInt("account_status_fk"));
+					a.setStatus(as);
+				}
+				
+				if (result.getInt("account_type_fk") != 0)
+				{
+					AccountType at = atdao.findById(result.getInt("account_type_fk"));
+					a.setType(at);
+				}
+								
 			}
 		}
 		
@@ -141,8 +156,17 @@ public class AccountDAOImpl implements AccountDAO
 	@Override
 	public float withdraw(float amount) 
 	{
+		float balance = account.balance;
 		account.balance -= amount;
-		return account.balance;
+		if (account.balance < 0)
+		{
+			return balance;
+		}
+		
+		else
+		{
+			return account.balance;
+		}
 	}
 
 	@Override
@@ -161,7 +185,7 @@ public class AccountDAOImpl implements AccountDAO
 	@Override
 	public AccountStatus getAccountStatusById(int id) 
 	{
-		AccountStatus accountStatus = statusDAO.findById(id);
+		AccountStatus accountStatus = asdao.findById(id);
 		
 		return accountStatus;
 	}
@@ -169,7 +193,7 @@ public class AccountDAOImpl implements AccountDAO
 	@Override
 	public AccountType getAccountTypeById(int id) 
 	{
-		AccountType accountType = typeDAO.findById(id);
+		AccountType accountType = atdao.findById(id);
 		
 		return accountType;
 	}
