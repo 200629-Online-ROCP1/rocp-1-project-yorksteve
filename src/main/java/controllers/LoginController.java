@@ -1,50 +1,24 @@
 package controllers;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import models.LoginDTO;
-import models.Role;
-import repos.RoleDAO;
-import repos.RoleDAOImpl;
 import services.LoginService;
-import services.RoleService;
 
 public class LoginController 
 {
 	public static final LoginService ls = new LoginService();
-	private static final ObjectMapper om = new ObjectMapper();
 	
-	public void login(HttpServletRequest req, HttpServletResponse res) throws IOException
+	public void login(LoginDTO l2, HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
 		if (req.getMethod().equals("POST"))
 		{
-			BufferedReader reader = req.getReader();
 			
-			StringBuilder s =  new StringBuilder();
-			
-			String line = reader.readLine();
-			
-			while (line != null)
-			{
-				s.append(line);
-				
-				line = reader.readLine();
-			}
-			
-			String body = new String(s);
-			
-			System.out.println(body);
-			
-			LoginDTO l = om.readValue(body, LoginDTO.class);
-			
-			if (ls.login(l, res))
+			if (ls.login(l2, req, res))
 			{
 				res.setStatus(200);
 				res.getWriter().println("Login Successful!");
@@ -70,7 +44,7 @@ public class LoginController
 			l.username = req.getParameter("username");
 			l.password = req.getParameter("password");
 			
-			if (ls.login(l, res))
+			if (ls.login(l, req, res))
 			{
 				res.setStatus(200);
 				res.getWriter().println("Login Successful!");

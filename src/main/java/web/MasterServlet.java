@@ -16,6 +16,7 @@ import controllers.AccountController;
 import controllers.LoginController;
 import controllers.UsersController;
 import models.Account;
+import models.LoginDTO;
 import models.Transaction;
 import models.Users;
 
@@ -51,14 +52,15 @@ public class MasterServlet extends HttpServlet
 			accountId = (int) ses.getAttribute("account_fk");
 		}
 		
-		if (ses != null && (Boolean)ses.getAttribute("loggedin"))
-		{
+		
 			try
 			{
 				switch (portions[0])
 				{
+							
 				case "users":
-					if (portions.length == 1)
+					
+					if (portions.length == 1 && ses != null && (Boolean) ses.getAttribute("loggedin"))
 					{
 						BufferedReader reader = req.getReader();
 					
@@ -142,14 +144,8 @@ public class MasterServlet extends HttpServlet
 			{
 				e.printStackTrace();
 			}
-		}
 		
-		else
-		{
-			
-			res.setStatus(401);
-			res.getWriter().println("You must be logged in.");
-		}
+		System.out.println("Bottom of doGet");
 	}
 	
 	@Override
@@ -171,12 +167,7 @@ public class MasterServlet extends HttpServlet
 		int accountId = 0;
 		int statusId = 0;
 		
-		if (ses != null)
-		{
-			roleId = (int) ses.getAttribute("role_fk");
-			accountId = (int) ses.getAttribute("account_fk");
-			statusId = (int) ses.getAttribute("account_status_fk");
-		}
+	
 		
 		BufferedReader reader = req.getReader();
 		
@@ -192,23 +183,27 @@ public class MasterServlet extends HttpServlet
 		
 		String body = new String(s);
 		
-		Transaction amount = ac.getTransAmount(req);
-		
-		Account a = om.readValue(body, Account.class);
-		Users u = om.readValue(body, Users.class);
-		
-		
 		try
 		{
-			switch (portions[1])
+			if (ses != null)
+			{
+				roleId = (int) ses.getAttribute("role_fk");
+				accountId = (int) ses.getAttribute("account_fk");
+				statusId = (int) ses.getAttribute("account_status_fk");
+			}
+			
+			switch (portions[0])
 			{
 			case "accounts":
 				
+				Account a = om.readValue(body, Account.class);
 				ac.createAccount(a);
 				ac.getAccountStatusById(accountId).setStatusId(1);
 				
-				if (ac.getAccountStatusById(statusId) == 2)
+				if (a.getStatus().equals(ses.getAttribute("Open")))
 				{
+					Transaction amount = ac.getTransAmount(req);
+					
 					switch (portions[2])
 					{
 					
@@ -238,6 +233,7 @@ public class MasterServlet extends HttpServlet
 				break;
 				
 			case "register":
+				Users u = om.readValue(body, Users.class);
 				if (roleId == 1)
 				{
 					uc.addUser(u);
@@ -247,12 +243,14 @@ public class MasterServlet extends HttpServlet
 				else
 				{
 					res.setStatus(401);
+					System.out.println("Must be Admin");
 				}
 				
 				break;
 				
 			case "login":
-				lc.login(req, res);
+				LoginDTO l = om.readValue(body, LoginDTO.class);
+				lc.login(l, req, res);
 				break;
 				
 			case "logout":

@@ -22,32 +22,6 @@ public class AccountStatusDAOImpl implements AccountStatusDAO
 		return repo;
 	}
 
-	
-	
-	@Override
-	public boolean insert(AccountStatus accountStatus) 
-	{
-		try (Connection sconn = ConnectionUtil.GetConnection())
-		{
-			String sql = "INSERT INTO accountstatus(account_status) VALUES(?);";
-			
-			PreparedStatement statement = sconn.prepareStatement(sql);
-			statement.setString(1, accountStatus.getStatus());
-			
-			if (statement.execute()) 
-			{
-				return true;
-			}
-		}
-		
-		catch (SQLException e)
-		{
-			System.out.println(e);
-		}
-		
-		return false;
-	}
-
 	@Override
 	public boolean updateStatus(AccountStatus accountStatus) 
 	{
@@ -90,37 +64,6 @@ public class AccountStatusDAOImpl implements AccountStatusDAO
 			{
 				return new AccountStatus(result.getInt("status_id"), result.getString("account_status"));
 			}
-			
-		}
-		
-		catch (SQLException e)
-		{
-			System.out.println(e);
-		}
-		
-		return null;
-	}
-
-	@Override
-	public Set<AccountStatus> selectAll() 
-	{
-		try (Connection sconn = ConnectionUtil.GetConnection())
-		{
-			String sql = "SELECT * FROM accountstatus;";
-			
-			PreparedStatement statement = sconn.prepareStatement(sql);
-			
-			Set<AccountStatus> set = new HashSet<>();
-			
-			ResultSet result = statement.executeQuery(sql);
-			
-			while (result.next())
-			{
-				set.add(new AccountStatus(result.getInt("status_id"), result.getString("account_status")));
-			}
-			
-			return set;
-			
 			
 		}
 		

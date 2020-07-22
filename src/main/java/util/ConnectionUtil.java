@@ -8,6 +8,15 @@ public class ConnectionUtil
 {
 	public static Connection GetConnection() throws SQLException
 	{
+		try 
+		{
+			Class.forName("org.postgresql.Driver");
+		} 
+		catch (ClassNotFoundException e) 
+		{
+			e.printStackTrace();
+		}
+		
 		String url = "jdbc:postgresql://localhost:5432/project";
 		String username = "postgres";
 		String password = "darthmau1";

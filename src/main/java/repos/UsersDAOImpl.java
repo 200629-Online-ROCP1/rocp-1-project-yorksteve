@@ -48,6 +48,11 @@ public class UsersDAOImpl implements UsersDAO
 			statement.setObject(++index, user.getRole());
 			statement.setString(++index, user.getEmail());
 			
+			if (statement.execute())
+			{
+				return true;
+			}
+			
 		}
 		
 		catch (SQLException e)
@@ -85,7 +90,7 @@ public class UsersDAOImpl implements UsersDAO
 				Role r = rdao.getRoleById(result.getInt("role_fk"));
 				u.setRole(r);
 				
-				
+				return u;
 				
 			}
 			
@@ -154,7 +159,8 @@ public class UsersDAOImpl implements UsersDAO
 				
 				Role r = rdao.getRoleById(result.getInt("role_fk"));
 				u.setRole(r);
-							
+					
+				set.add(u);
 			}
 			
 			return set;
@@ -177,7 +183,9 @@ public class UsersDAOImpl implements UsersDAO
 			
 			PreparedStatement statement = conn.prepareStatement(sql);
 			
-			ResultSet result = statement.executeQuery(sql);
+			statement.setString(1, username);
+			
+			ResultSet result = statement.executeQuery();
 			
 			if (result.next())
 			{
@@ -192,6 +200,7 @@ public class UsersDAOImpl implements UsersDAO
 				Role r = rdao.getRoleById(result.getInt("role_fk"));
 				u.setRole(r);
 					
+				return u;
 			}
 		}
 		
@@ -212,7 +221,7 @@ public class UsersDAOImpl implements UsersDAO
 			
 			PreparedStatement statement = conn.prepareStatement(sql);
 			
-			ResultSet result = statement.executeQuery(sql);
+			ResultSet result = statement.executeQuery();
 			
 			if (result.next())
 			{
@@ -228,6 +237,7 @@ public class UsersDAOImpl implements UsersDAO
 				Role r = rdao.getRoleById(result.getInt("role_fk"));
 				u.setRole(r);
 					
+				return u;
 			}
 		}
 		

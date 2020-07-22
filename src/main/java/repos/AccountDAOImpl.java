@@ -41,15 +41,17 @@ public class AccountDAOImpl implements AccountDAO
 	{
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
+			int index = 0;
+			
 			String sql = "INSERT INTO accounts(account_id, account_balance, "
 					+ "account_status_fk, account_type_fk, user_id_fk) VALUES(?,?,?,?,?);";
 			
 			PreparedStatement statement = aconn.prepareStatement(sql);
-			statement.setInt(1, account.getAccountId());
-			statement.setFloat(2, account.getBalance());
-			statement.setInt(3, account.getStatus().getStatusId());
-			statement.setInt(4, account.getType().getTypeId());
-			statement.setInt(5, account.getUserId().getUserID());
+			statement.setInt(++index, account.getAccountId());
+			statement.setFloat(++index, account.getBalance());
+			statement.setInt(++index, account.getStatus().getStatusId());
+			statement.setInt(++index, account.getType().getTypeId());
+			statement.setInt(++index, account.getUserId().getUserID());
 			
 			if (statement.execute()) 
 			{
@@ -113,7 +115,7 @@ public class AccountDAOImpl implements AccountDAO
 			
 			ResultSet result = statement.executeQuery();
 			
-			while (result.next())
+			if (result.next())
 			{
 				Account a = new Account();
 				a.setAccountId(result.getInt("account_id"));
@@ -128,7 +130,7 @@ public class AccountDAOImpl implements AccountDAO
 				Users u = udao.findByUserId(result.getInt("user_id_fk"));
 				a.setUserId(u);
 				
-								
+				return a;			
 			}
 		}
 		
@@ -148,7 +150,7 @@ public class AccountDAOImpl implements AccountDAO
 	{
 		try (Connection aconn = ConnectionUtil.GetConnection())
 		{
-			String sql = "DELETE accounts WHERE account_id = ?;";
+			String sql = "DELETE FROM accounts WHERE account_id = ?;";
 			
 			PreparedStatement statement = aconn.prepareStatement(sql);
 			statement.setInt(1, account.getAccountId());
@@ -280,7 +282,7 @@ public class AccountDAOImpl implements AccountDAO
 			
 			Set<Account> set = new HashSet<>();
 			
-			ResultSet result = statement.executeQuery(sql);
+			ResultSet result = statement.executeQuery();
 			
 			while (result.next())
 			{
@@ -294,6 +296,7 @@ public class AccountDAOImpl implements AccountDAO
 				AccountType at = atdao.findById(result.getInt("account_type_fk"));
 				a.setType(at);
 				
+				set.add(a);
 			}
 			
 			return set;
