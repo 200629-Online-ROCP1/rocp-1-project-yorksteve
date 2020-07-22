@@ -23,5 +23,10 @@ public class UsersController
 	{
 		return usS.addUser(u);
 	}
+	
+	public boolean updateUser(Users u)
+	{
+		return usS.updateUser(u);
+	}
 
 }

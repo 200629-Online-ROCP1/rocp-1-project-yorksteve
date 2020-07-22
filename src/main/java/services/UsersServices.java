@@ -36,4 +36,9 @@ public class UsersServices
 		
 	}
 
+	public boolean updateUser(Users u) 
+	{
+		return dao.updateUser(u);
+	}
+
 }

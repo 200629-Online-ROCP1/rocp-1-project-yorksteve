@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import models.Users;
+import models.Account;
 import models.Role;
 import util.ConnectionUtil;
 
@@ -24,6 +25,7 @@ public class UsersDAOImpl implements UsersDAO
 	}
 	
 	private static final RoleDAO rdao = new RoleDAOImpl();
+	private static final AccountDAO adao = AccountDAOImpl.GetInstance();
 
 	
 	@Override
@@ -80,11 +82,9 @@ public class UsersDAOImpl implements UsersDAO
 				u.setLastName(result.getString("last_name"));
 				u.setEmail(result.getString("email"));
 				
-				if (result.getInt("role_fk") != 0)
-				{
-					Role r = rdao.getRoleById(result.getInt("role_fk"));
-					u.setRole(r);
-				}
+				Role r = rdao.getRoleById(result.getInt("role_fk"));
+				u.setRole(r);
+				
 				
 				
 			}
@@ -152,11 +152,9 @@ public class UsersDAOImpl implements UsersDAO
 				u.setLastName(result.getString("last_name"));
 				u.setEmail(result.getString("email"));
 				
-				if (result.getInt("role_fk") != 0)
-				{
-					Role r = rdao.getRoleById(result.getInt("role_fk"));
-					u.setRole(r);
-				}			
+				Role r = rdao.getRoleById(result.getInt("role_fk"));
+				u.setRole(r);
+							
 			}
 			
 			return set;
@@ -191,11 +189,9 @@ public class UsersDAOImpl implements UsersDAO
 				u.setLastName(result.getString("last_name"));
 				u.setEmail(result.getString("email"));
 				
-				if (result.getInt("role_fk") != 0)
-				{
-					Role r = rdao.getRoleById(result.getInt("role_fk"));
-					u.setRole(r);
-				}	
+				Role r = rdao.getRoleById(result.getInt("role_fk"));
+				u.setRole(r);
+					
 			}
 		}
 		
@@ -228,11 +224,36 @@ public class UsersDAOImpl implements UsersDAO
 				u.setLastName(result.getString("last_name"));
 				u.setEmail(result.getString("email"));
 				
-				if (result.getInt("role_fk") != 0)
-				{
-					Role r = rdao.getRoleById(result.getInt("role_fk"));
-					u.setRole(r);
-				}	
+				
+				Role r = rdao.getRoleById(result.getInt("role_fk"));
+				u.setRole(r);
+					
+			}
+		}
+		
+		catch (SQLException e)
+		{
+			System.out.println(e);
+		}
+		
+		return null;
+	}
+
+	@Override
+	public Account getAccountById(int id) 
+	{
+		try (Connection conn = ConnectionUtil.GetConnection())
+		{
+			String sql = "SELECT * FROM accounts WHERE user.user_id = ?;";
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setInt(1, id);
+			
+			ResultSet result = statement.executeQuery();
+			
+			if (result.next())
+			{
+				Account a = new Account();
+				return a;
 			}
 		}
 		

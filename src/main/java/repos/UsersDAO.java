@@ -2,6 +2,7 @@ package repos;
 
 import java.util.Set;
 
+import models.Account;
 import models.Users;
 
 public interface UsersDAO 
@@ -12,4 +13,5 @@ public interface UsersDAO
 	public Users findByUserName(String username);
 	public Users findByPassword(String password);
 	public Set<Users> selectAll();
+	public Account getAccountById(int id);
 }

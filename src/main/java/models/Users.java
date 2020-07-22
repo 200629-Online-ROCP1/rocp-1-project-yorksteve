@@ -9,25 +9,17 @@ public class Users
 	private String lastName;
 	private String email;
 	private Role role;
+	private Account account;
+	
 	
 	public Users() 
 	{
 		super();
 	}
-
-	public Users(String username, String password, String firstName, String lastName, String email, Role role) 
-	{
-		super();
-		this.username = username;
-		this.password = password;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.role = role;
-	}
-
+	
+	
 	public Users(int userID, String username, String password, String firstName, String lastName, String email,
-			Role role) 
+			Role role, Account account) 
 	{
 		super();
 		this.userID = userID;
@@ -37,109 +29,137 @@ public class Users
 		this.lastName = lastName;
 		this.email = email;
 		this.role = role;
+		this.account = account;
 	}
 	
 	
-	
+	public Users(String username, String password, String firstName, String lastName, String email, Role role,
+			Account account) 
+	{
+		super();
+		this.username = username;
+		this.password = password;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.role = role;
+		this.account = account;
+	}
+
 
 	public int getUserID() 
 	{
 		return userID;
 	}
 
+
 	public void setUserID(int userID) 
 	{
 		this.userID = userID;
 	}
 
+
 	public String getUsername() 
 	{
 		return username;
 	}
-	
+
 
 	public void setUsername(String username) 
 	{
 		this.username = username;
 	}
-	
+
 
 	public String getPassword() 
 	{
 		return password;
 	}
-	
+
 
 	public void setPassword(String password) 
 	{
 		this.password = password;
 	}
-	
+
 
 	public String getFirstName() 
 	{
 		return firstName;
 	}
-	
+
 
 	public void setFirstName(String firstName) 
 	{
 		this.firstName = firstName;
 	}
-	
+
 
 	public String getLastName() 
 	{
 		return lastName;
 	}
-	
+
 
 	public void setLastName(String lastName) 
 	{
 		this.lastName = lastName;
 	}
-	
+
 
 	public String getEmail() 
 	{
 		return email;
 	}
-	
+
 
 	public void setEmail(String email) 
 	{
 		this.email = email;
 	}
-	
+
 
 	public Role getRole() 
 	{
 		return role;
 	}
-	
+
 
 	public void setRole(Role role) 
 	{
 		this.role = role;
 	}
-	
+
+
+	public Account getAccount() 
+	{
+		return account;
+	}
+
+
+	public void setAccount(Account account) 
+	{
+		this.account = account;
+	}
+
 
 	@Override
 	public int hashCode() 
 	{
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((account == null) ? 0 : account.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((role == null) ? 0 : role.hashCode());
+		result = prime * result + userID;
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
 		return result;
 	}
-	
 
-	
+
 	@Override
 	public boolean equals(Object obj) 
 	{
@@ -153,6 +173,15 @@ public class Users
 			return false;
 		
 		Users other = (Users) obj;
+		
+		if (account == null) 
+		{
+			if (other.account != null)
+				return false;
+		} 
+		
+		else if (!account.equals(other.account))
+			return false;
 		
 		if (email == null) 
 		{
@@ -185,11 +214,10 @@ public class Users
 		{
 			if (other.password != null)
 				return false;
-		}
+		} 
 		
 		else if (!password.equals(other.password))
 			return false;
-		
 		if (role == null) 
 		{
 			if (other.role != null)
@@ -197,6 +225,9 @@ public class Users
 		} 
 		
 		else if (!role.equals(other.role))
+			return false;
+		
+		if (userID != other.userID)
 			return false;
 		
 		if (username == null) 
@@ -211,13 +242,17 @@ public class Users
 		return true;
 	}
 
-	
+
 	@Override
 	public String toString() 
 	{
 		return "Users [userID=" + userID + ", username=" + username + ", password=" + password + ", firstName="
-				+ firstName + ", lastName=" + lastName + ", email=" + email + ", role=" + role + "]";
+				+ firstName + ", lastName=" + lastName + ", email=" + email + ", role=" + role + ", account=" + account
+				+ "]";
 	}
 	
+	
+	
+	
+	
 }
-

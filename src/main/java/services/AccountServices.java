@@ -1,8 +1,14 @@
 package services;
 
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import models.Account;
 import models.AccountStatus;
 import models.AccountType;
+import models.Transaction;
 import models.Users;
 import repos.AccountDAO;
 import repos.AccountDAOImpl;
@@ -16,19 +22,39 @@ public class AccountServices
 		return aDao.getAccountByID(id);
 	}
 	
-	public float withdraw(float amount)
+	public boolean withdraw(Transaction tAmount)
 	{
-		return aDao.withdraw(amount);
+		return aDao.withdraw(aDao.getAccountByID(Transaction.accountSourceId), tAmount.getAmount());
 	}
 	
-	public float deposit(float amount)
+	public boolean deposit(Transaction tAmount)
 	{
-		return aDao.deposit(amount);
+		return aDao.deposit(aDao.getAccountByID(Transaction.accountSourceId), tAmount.getAmount());
 	}
 	
-	public float transfer(float amount)
+	public boolean transfer(Transaction tAmount)
 	{
-		return aDao.transfer(amount);
+		if (aDao.withdraw(aDao.getAccountByID(Transaction.accountSourceId), tAmount.getAmount()))
+		{
+			if (aDao.deposit(aDao.getAccountByID(Transaction.accountTargetId), tAmount.getAmount()))
+			{
+				System.out.println("$" + tAmount + " has been transferred from Account #" + Transaction.accountSourceId
+									+ " to Account #" + Transaction.accountTargetId);
+				return true;
+			}
+			
+			else
+			{
+				aDao.deposit(aDao.getAccountByID(Transaction.accountSourceId), tAmount.getAmount());
+				return false;
+			}
+		}
+		
+		else
+		{
+			return false;
+		}
+		
 	}
 	
 	public AccountStatus getAccountStatusById(int id)
@@ -50,7 +76,15 @@ public class AccountServices
 	{
 		return aDao.updateAccountById(account);
 	}
-
 	
+	public Set<Account> findAll()
+	{
+		return aDao.findAll();
+	}
+
+	public boolean deleteAccount(Account account)
+	{
+		return aDao.deleteAccount(account);
+	}
 
 }

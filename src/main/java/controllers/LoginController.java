@@ -18,9 +18,8 @@ import services.RoleService;
 
 public class LoginController 
 {
-	private static final LoginService ls = new LoginService();
+	public static final LoginService ls = new LoginService();
 	private static final ObjectMapper om = new ObjectMapper();
-	private static final RoleService rs = new RoleService();
 	
 	public void login(HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
@@ -45,11 +44,8 @@ public class LoginController
 			
 			LoginDTO l = om.readValue(body, LoginDTO.class);
 			
-			if (ls.login(l))
+			if (ls.login(l, res))
 			{
-				HttpSession ses = req.getSession();
-				ses.setAttribute("user", l);
-				ses.setAttribute("loggedin", true);
 				res.setStatus(200);
 				res.getWriter().println("Login Successful!");
 			}
@@ -74,7 +70,7 @@ public class LoginController
 			l.username = req.getParameter("username");
 			l.password = req.getParameter("password");
 			
-			if (ls.login(l))
+			if (ls.login(l, res))
 			{
 				res.setStatus(200);
 				res.getWriter().println("Login Successful!");

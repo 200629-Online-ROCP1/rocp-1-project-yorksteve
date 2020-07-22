@@ -1,27 +1,38 @@
 package controllers;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import models.Account;
 import models.AccountStatus;
 import models.AccountType;
+import models.Transaction;
 import services.AccountServices;
 
 public class AccountController 
 {
 	public static final AccountServices as = new AccountServices();
+	public static final ObjectMapper om = new ObjectMapper();
 	
-	public float withdraw(float amount)
+	public boolean withdraw(Transaction tAmount)
 	{
-		return as.withdraw(amount);
+		return as.withdraw(tAmount);
 	}
 	
-	public float deposit(float amount)
+	public boolean deposit(Transaction tAmount)
 	{
-		return as.deposit(amount);
+		return as.deposit(tAmount);
 	}
 	
-	public float transfer(float amount)
+	public boolean transfer(Transaction tAmount)
 	{
-		return as.transfer(amount);
+		return as.transfer(tAmount);
 	}
 	
 	public AccountStatus getAccountStatusById(int id)
@@ -47,6 +58,37 @@ public class AccountController
 	public Account getAccountById(int id) 
 	{
 		return as.getAccountById(id);
+	}
+	
+	public Set<Account> findAll(HttpServletRequest req, HttpServletResponse res) throws IOException
+	{
+		return as.findAll();
+	}
+	
+	public Transaction getTransAmount(HttpServletRequest req) throws IOException
+	{
+		BufferedReader reader = req.getReader();
+		
+		StringBuilder s = new StringBuilder();
+		
+		String line = reader.readLine();
+		
+		while (line != null)
+		{
+			s.append(line);
+			line = reader.readLine();
+		}
+		
+		String body = new String(s);
+		
+		Transaction amount = om.readValue(body, Transaction.class);
+		
+		return amount;
+	}
+	
+	public boolean deleteAccount(Account account)
+	{
+		return as.deleteAccount(account);
 	}
 
 }
