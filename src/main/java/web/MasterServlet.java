@@ -2,8 +2,6 @@ package web;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +20,10 @@ import models.Users;
 
 public class MasterServlet extends HttpServlet 
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static final ObjectMapper om = new ObjectMapper();
 	private static final UsersController uc = new UsersController();
 	private static final AccountController ac = new AccountController();
@@ -29,7 +31,7 @@ public class MasterServlet extends HttpServlet
 	
 	
 	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException, NullPointerException
 	{
 		System.out.println("in doGet");
 		res.setContentType("application/json");
@@ -41,42 +43,31 @@ public class MasterServlet extends HttpServlet
 
 		String[] portions = URI.split("/");
 		
-		HttpSession ses = req.getSession(false);
 		
 		int roleId = 0;
 		int accountId = 0;
 		
-		if (ses != null)
-		{
-			roleId = (int) ses.getAttribute("role_fk");
-			accountId = (int) ses.getAttribute("account_fk");
-		}
 		
-		
+
 			try
-			{
+			{		
+				HttpSession ses = req.getSession(false);
+				
+				if (ses != null)
+				{
+					roleId = (int) ses.getAttribute("role_fk");
+					accountId = (int) ses.getAttribute("account_fk");
+				}
+		
+
+				
 				switch (portions[0])
 				{
 							
 				case "users":
 					
-					if (portions.length == 1 && ses != null && (Boolean) ses.getAttribute("loggedin"))
-					{
-						BufferedReader reader = req.getReader();
-					
-						StringBuilder s = new StringBuilder();
-					
-						String line = reader.readLine();
-					
-						while (line != null)
-						{
-							s.append(line);
-							line = reader.readLine();
-						}
-					
-						String body = new String(s);
-					
-						Users u = om.readValue(body, Users.class);
+					if (ses != null && (Boolean) ses.getAttribute("loggedin"))
+					{				
 					
 						if (portions.length == 1)
 						{
@@ -89,6 +80,7 @@ public class MasterServlet extends HttpServlet
 							else
 							{
 								res.setStatus(401);
+								res.getWriter().println("You are not authorized.");
 							}
 						}
 						
@@ -119,7 +111,9 @@ public class MasterServlet extends HttpServlet
 				
 					else if (portions.length == 2)
 					{
-						ac.getAccountById(accountId);
+						Account account = ac.getAccountById(accountId);
+						String acc = om.writeValueAsString(account);
+						res.getWriter().println(acc);
 					}
 				
 					else
@@ -165,7 +159,6 @@ public class MasterServlet extends HttpServlet
 		
 		int roleId = 0;
 		int accountId = 0;
-		int statusId = 0;
 		
 	
 		
@@ -189,7 +182,6 @@ public class MasterServlet extends HttpServlet
 			{
 				roleId = (int) ses.getAttribute("role_fk");
 				accountId = (int) ses.getAttribute("account_fk");
-				statusId = (int) ses.getAttribute("account_status_fk");
 			}
 			
 			switch (portions[0])
@@ -203,20 +195,39 @@ public class MasterServlet extends HttpServlet
 				if (a.getStatus().equals(ses.getAttribute("Open")))
 				{
 					Transaction amount = ac.getTransAmount(req);
+					Account account = ac.getAccountById(accountId);
 					
-					switch (portions[2])
+					switch (portions[1])
 					{
 					
 					case "withdraw":
-						ac.withdraw(amount);
+						if (ac.withdraw(amount))
+						{
+							account = ac.getAccountById(amount.getAccountSourceId());
+							res.getWriter().println("Success");
+							res.setStatus(201);
+						}
+						
 						break;
 					
 					case "deposit":
-						ac.deposit(amount);
+						if (ac.deposit(amount))
+						{
+							account = ac.getAccountById(amount.getAccountSourceId());
+							res.getWriter().println("Success");
+							res.setStatus(201);
+						}
+						
 						break;
 					
 					case "transfer":
-						ac.transfer(amount);
+						if (ac.transfer(amount))
+						{
+							account = ac.getAccountById(amount.getAccountSourceId());
+							Account acc2 = ac.getAccountById(amount.getAccountTargetId());
+							res.getWriter().println("Success");
+							res.setStatus(201);
+						}
 						break;
 					case "delete":
 						ac.deleteAccount(a);
@@ -282,28 +293,28 @@ public class MasterServlet extends HttpServlet
 		HttpSession ses = req.getSession(false);
 		
 		int roleId = 0;
-		int accountId = 0;
 		
 		if (ses != null)
 		{
 			roleId = (int) ses.getAttribute("role_fk");
-			accountId = (int) ses.getAttribute("account_fk");
 		}
 		
-		Account a = new Account();
-		Users u = new Users();
+		
 		Users currentUser = (Users) ses.getAttribute("user");
 		
 		
 		if (ses != null && (Boolean)ses.getAttribute("loggedin"))
 		{
-			switch (portions[1])
+			switch (portions[0])
 			{
 			case "users":
+				Users u = new Users();
 				if (roleId == 1 || currentUser.getUserID() == (u.getUserID()))
 					uc.updateUser(u);
 				break;
 			case "accounts":
+				int id = Integer.parseInt(portions[1]);
+				Account a = ac.getAccountById(id);
 				if (roleId == 1)
 				{
 					ac.updateAccountById(a);

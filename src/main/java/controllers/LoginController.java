@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import models.LoginDTO;
+import models.Users;
 import services.LoginService;
 
 public class LoginController 
@@ -15,54 +16,27 @@ public class LoginController
 	
 	public void login(LoginDTO l2, HttpServletRequest req, HttpServletResponse res) throws IOException
 	{
-		if (req.getMethod().equals("POST"))
+			
+		if (ls.login(l2, req, res))
 		{
+			res.setStatus(200);
+			res.getWriter().println("Login Successful!");
+		}
 			
-			if (ls.login(l2, req, res))
+		else
+		{
+			HttpSession ses = req.getSession(false);
+			if (ses != null)
 			{
-				res.setStatus(200);
-				res.getWriter().println("Login Successful!");
+				ses.invalidate();
 			}
-			
-			else
-			{
-				HttpSession ses = req.getSession(false);
-				if (ses != null)
-				{
-					ses.invalidate();
-				}
 				
-				res.setStatus(401);
-				res.getWriter().println("Login Failed");
+			res.setStatus(401);
+			res.getWriter().println("Login Failed");
 				
-			}
 		}
 		
-		else if (req.getMethod().equals("GET") && (req.getParameterMap().containsKey("username") && (req.getParameterMap().containsKey("password"))))
-		{
-			LoginDTO l = new LoginDTO();
-			l.username = req.getParameter("username");
-			l.password = req.getParameter("password");
-			
-			if (ls.login(l, req, res))
-			{
-				res.setStatus(200);
-				res.getWriter().println("Login Successful!");
-			}
-			
-			else
-			{
-				HttpSession ses = req.getSession(false);
-				if (ses != null)
-				{
-					ses.invalidate();
-				}
-				
-				res.setStatus(401);
-				res.getWriter().println("Login Failed");
-				
-			}
-		}
+		
 	}
 	
 	public void logout(HttpServletRequest req, HttpServletResponse res) throws IOException 
@@ -71,7 +45,7 @@ public class LoginController
 		
 		if (ses != null)
 		{
-			LoginDTO l = (LoginDTO) ses.getAttribute("user");
+			Users l = (Users) ses.getAttribute("user");
 			ses.invalidate();
 			res.setStatus(200);
 			res.getWriter().println("You logged out " + l.username);

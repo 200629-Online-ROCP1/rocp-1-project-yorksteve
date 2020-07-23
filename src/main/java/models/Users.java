@@ -3,7 +3,7 @@ package models;
 public class Users 
 {
 	private int userID;
-	private String username;
+	public String username;
 	private String password;
 	private String firstName;
 	private String lastName;
